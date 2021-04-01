@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         downloadModuleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
+            public void onClick(final View view)
             {
                 SplitInstallRequest request = SplitInstallRequest.newBuilder().addModule(DYNAMIC_MODULE_NAME).build();
                 splitInstallManager.registerListener(new SplitInstallStateUpdatedListener() {
@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
 
                             case SplitInstallSessionStatus.INSTALLED:
+                                goNextModuleBtn.setVisibility(View.VISIBLE);
                                 Toast.makeText(MainActivity.this, "Installed", Toast.LENGTH_SHORT).show();
                                  updateOnDemandBtnStatus();
                                 break;
