@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
                             case SplitInstallSessionStatus.INSTALLED:
                                 Toast.makeText(MainActivity.this, "Installed", Toast.LENGTH_SHORT).show();
-                                updateOnDemandBtnStatus();
+                                 updateOnDemandBtnStatus();
                                 break;
 
                         }
