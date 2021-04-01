@@ -1,0 +1,4 @@
+include ':newdynamicfeature'
+include ':ondemand'
+include ':app'
+rootProject.name = "MyDynamicFeatureApp"
