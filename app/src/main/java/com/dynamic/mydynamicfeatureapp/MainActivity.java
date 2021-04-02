@@ -3,20 +3,28 @@ package com.dynamic.mydynamicfeatureapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
 import com.google.android.play.core.splitinstall.SplitInstallSessionState;
 import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener;
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus;
+import com.google.android.play.core.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity {
-
+    AppUpdateManager appUpdateManager;
+    int RequestUpdate = 1;
     private SplitInstallManager splitInstallManager;
     private static final String DYNAMIC_MODULE_NAME = "ondemand";
     private Button downloadModuleBtn;
@@ -51,7 +59,55 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        appUpdateManager = AppUpdateManagerFactory.create(this);
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo result) {
+                if((result.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE)
+                        && result.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
+                {
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(
+                                result,
+                                AppUpdateType.IMMEDIATE,
+                                MainActivity.this,
+                                RequestUpdate);
+                    }
+                    catch (IntentSender.SendIntentException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo result) {
+                if(result.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS)
+                {
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(
+                                result,
+                                AppUpdateType.IMMEDIATE,
+                               MainActivity.this,
+                                RequestUpdate);
+                    }
+                    catch (IntentSender.SendIntentException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+
+
 
 
 
